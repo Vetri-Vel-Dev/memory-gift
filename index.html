@@ -1,82 +1,426 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>For You ❤️</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Only Us</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: black;
-    color: white;
-    text-align: center;
-}
+    <style>
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        }
 
-#overlay {
-    position: fixed;
-    inset: 0;
-    background: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    cursor: pointer;
-    z-index: 10;
-}
+        /* STAGE */
+        #stage {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top, #111, #000);
+        }
 
-img {
-    width: 90%;
-    max-width: 400px;
-    border-radius: 16px;
-    margin: 20px auto;
-    display: none;
-}
+        /* PHOTO */
+        .photo {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
 
-p {
-    font-size: 18px;
-    padding: 0 20px;
-}
-</style>
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            max-width: 100vw;
+            max-height: 100vh;
+            filter: brightness(1);
+            transform: scale(1.02);
+            transition: transform 7s ease, filter 4s ease;
+        }
+
+
+        .photo.show {
+            opacity: 1;
+        }
+
+        .photo.show img {
+            filter: blur(0) brightness(1);
+            transform: scale(1.06);
+        }
+
+        /* TEXT MOMENT */
+        #textMoment {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 26px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 2s ease;
+            align-items: flex-start;
+            padding-top: 32%;
+        }
+
+        #textMoment::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle,
+                    rgba(0, 0, 0, 0.25) 0%,
+                    rgba(0, 0, 0, 0.15) 35%,
+                    rgba(0, 0, 0, 0.0) 65%);
+            z-index: -1;
+        }
+
+
+        #textMoment.show {
+            opacity: 1;
+        }
+
+        /* .text-whisper {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.75);
+            letter-spacing: 0.6px;
+            line-height: 1.6;
+        } */
+        .text-whisper {
+            font-size: 18px;
+            color: #f3b6c8;
+            /* muted rose */
+            letter-spacing: 0.8px;
+            line-height: 1.7;
+            text-shadow:
+                0 0 10px rgba(243, 182, 200, 0.25),
+                0 0 20px rgba(243, 182, 200, 0.15);
+        }
+
+        .text-whisper.text-dark {
+            color: #c85c80;
+            /* brighter rose */
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 0.55),
+                0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+
+        .text-emotion {
+            font-size: 26px;
+            font-weight: 500;
+            color: #ffd6e8;
+            line-height: 1.7;
+            text-shadow: 0 0 20px rgba(255, 160, 190, 0.35);
+        }
+
+        .text-final {
+            font-size: 28px;
+            font-weight: 600;
+            color: #ff8fb3;
+            line-height: 1.8;
+            text-shadow: 0 0 30px rgba(255, 140, 180, 0.6);
+        }
+
+        .text-light {
+            color: #ffd6e8;
+            text-shadow: 0 0 20px rgba(255, 160, 190, 0.35);
+        }
+
+        .text-dark {
+            color: #d16a8a;
+            /* soft girly rose-pink */
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 0.6),
+                /* crisp edge */
+                0 2px 6px rgba(0, 0, 0, 0.35),
+                /* depth */
+                0 6px 18px rgba(0, 0, 0, 0.25);
+
+        }
+
+        /* VIGNETTE */
+        #vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle, transparent 45%, rgba(0, 0, 0, 0.7));
+            pointer-events: none;
+        }
+
+        /* LIGHT REVEAL */
+        #light {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 200, 220, 0.9), transparent 70%);
+            pointer-events: none;
+            transform: scale(0);
+            transition: transform 2s ease;
+        }
+
+        /* HOLD PROMPT */
+        #hint {
+            position: fixed;
+            bottom: 12%;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 12px;
+            letter-spacing: 1px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease;
+            animation: breathe 3s infinite;
+            z-index: 8;
+        }
+
+
+
+        /* @keyframes breathe {
+
+            0%,
+            100% {
+                opacity: 0.3
+            }
+
+            50% {
+                opacity: 1
+            }
+        } */
+
+        @keyframes breathe {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+
+        #closure {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 18px;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.65);
+            opacity: 0;
+            transition: opacity 2.5s ease;
+            pointer-events: none;
+        }
+
+
+        #closure.show {
+            opacity: 1;
+        }
+
+        #textMoment,
+        #textMoment * {
+            filter: none !important;
+            backdrop-filter: none !important;
+        }
+
+        #textMoment {
+            z-index: 6;
+        }
+
+        #closure {
+            z-index: 7;
+        }
+
+        #light {
+            z-index: 5;
+        }
+
+        #vignette {
+            z-index: 4;
+        }
+
+        #stage {
+            z-index: 1;
+        }
+    </style>
+
 </head>
 
 <body>
 
-<div id="overlay">Tap to begin 💖</div>
+    <div id="stage">
+        <div class="photo"><img src="images/img1.jpg"></div>
+        <div class="photo"><img src="images/img2.jpg"></div>
+        <div class="photo"><img src="images/img3.jpg"></div>
+        <div class="photo"><img src="images/img4.jpg"></div>
+        <div class="photo"><img src="images/img5.jpg"></div>
+        <div class="photo"><img src="images/img6.jpg"></div>
+        <div class="photo"><img src="images/img7.jpg"></div>
+        <div class="photo"><img src="images/img8.jpg"></div>
+    </div>
 
-<audio id="music" loop>
-    <source src="song.mp3" type="audio/mpeg">
-</audio>
+    <div id="textMoment"></div>
+    <div id="vignette"></div>
+    <div id="light"></div>
+    <div id="hint">touch & hold</div>
 
-<img src="images/img1.jpg">
-<p>You came into my life quietly…</p>
+    <audio id="music" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
 
-<img src="images/img2.jpg">
-<p>And slowly became my favorite part of it ✨</p>
+    <script>
 
-<img src="images/img3.jpg">
-<p>This song will always remind me of you ❤️</p>
+        const photos = document.querySelectorAll('.photo');
+        const textMoment = document.getElementById('textMoment');
+        const light = document.getElementById('light');
+        const hint = document.getElementById('hint');
+        const music = document.getElementById('music');
 
-<script>
-const images = document.querySelectorAll("img");
-const overlay = document.getElementById("overlay");
-const music = document.getElementById("music");
+        const sequence = [
+            { img: 0, text: "Some moments arrive quietly.", style: "whisper", theme: "dark" },
+            { img: 1, text: "They don’t ask for attention.", style: "whisper", theme: "dark" },
+            { img: 2, text: "But somehow… they stay.", style: "emotion", theme: "dark" },
+            { img: 3 }, // silence = powerful
+            { img: 4, text: "With you, even ordinary days felt special.", style: "emotion", theme: "dark" },
+            { img: 5, text: "I didn’t realize it then.", style: "whisper", theme: "dark" },
+            { img: 6, text: "Until every memory started leading back to you.", style: "emotion", theme: "light" },
+            { img: 7, text: "And I’d choose you… every time ❤️", style: "final", theme: "dark" }
+        ];
 
-overlay.onclick = () => {
-    overlay.style.display = "none";
-    music.play();
+        let index = 0;
+        let holding = false;
+        let revealed = false;
+        let finished = false;
+        window.addEventListener("load", () => {
+            showHint();
+        });
 
-    let i = 0;
-    images[i].style.display = "block";
 
-    setInterval(() => {
-        images[i].style.display = "none";
-        i = (i + 1) % images.length;
-        images[i].style.display = "block";
-    }, 4000);
-};
-</script>
+        function reveal() {
+            if (revealed) return;
+            revealed = true;
 
+            hideHint();
+            music.play();
+
+            const step = sequence[index];
+            const photo = photos[step.img];
+            const img = photo.querySelector("img");
+
+
+            // Show photo
+            photo.classList.add("show");
+
+            // Show text (if any)
+            if (step.text) {
+                setTimeout(() => {
+                    textMoment.className = "";
+                    if (step.theme === "dark") {
+                        textMoment.classList.add("dark-bg");
+                    }
+
+                    textMoment.innerHTML = `
+                <div class="text-${step.style} text-${step.theme}">
+                    ${step.text}
+                </div>
+            `;
+                    textMoment.classList.add("show");
+                }, 3500);
+            }
+
+            // Fade out & move forward
+            setTimeout(() => {
+
+                // Blur ONLY on final slide
+                if (index === sequence.length - 1) {
+                    img.style.filter = "blur(6px) brightness(0.8)";
+                    document.getElementById("closure").classList.add("show");
+                }
+
+                photo.classList.remove("show");
+                textMoment.classList.remove("show");
+
+                if (index === sequence.length - 1) {
+                    finished = true;          // lock experience
+                    revealed = true;
+                    hideHint();               // never show again
+                    return;
+                }
+
+                index++;
+                revealed = false;
+                showHint();                   // 👈 ALWAYS show for next slide
+
+
+            }, 9000);
+        }
+
+
+
+        /* HOLD INTERACTION */
+        function startHold(x, y) {
+            if (finished) return;
+
+            holding = true;
+
+            light.style.left = x - 10 + "px";
+            light.style.top = y - 10 + "px";
+            light.style.transform = "scale(18)";
+
+            setTimeout(() => {
+                if (holding && !finished) {
+                    reveal();
+                }
+            }, 1200);
+        }
+
+
+        function endHold() {
+            holding = false;
+            light.style.transform = "scale(0)";
+        }
+        function showHint() {
+            if (finished) return;
+            hint.style.visibility = "visible";
+            hint.style.opacity = "0.6";
+        }
+
+        function hideHint() {
+            hint.style.opacity = "0";
+            hint.style.visibility = "hidden";
+        }
+
+        let isTouch = false;
+        document.addEventListener("touchstart", e => {
+            isTouch = true;
+            const t = e.touches[0];
+            startHold(t.clientX, t.clientY);
+        }, { passive: true });
+
+        document.addEventListener("touchend", endHold);
+
+        document.addEventListener("mousedown", e => {
+            if (isTouch) return;
+            startHold(e.clientX, e.clientY);
+        });
+
+        document.addEventListener("mouseup", endHold);
+    </script>
+
+
+    <div id="closure">some things are meant to stay ✨</div>
 </body>
+
 </html>
