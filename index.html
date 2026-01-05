@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>For You ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: black;
+    color: white;
+    text-align: center;
+}
+
+#overlay {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+img {
+    width: 90%;
+    max-width: 400px;
+    border-radius: 16px;
+    margin: 20px auto;
+    display: none;
+}
+
+p {
+    font-size: 18px;
+    padding: 0 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="overlay">Tap to begin 💖</div>
+
+<audio id="music" loop>
+    <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<img src="images/img1.jpg">
+<p>You came into my life quietly…</p>
+
+<img src="images/img2.jpg">
+<p>And slowly became my favorite part of it ✨</p>
+
+<img src="images/img3.jpg">
+<p>This song will always remind me of you ❤️</p>
+
+<script>
+const images = document.querySelectorAll("img");
+const overlay = document.getElementById("overlay");
+const music = document.getElementById("music");
+
+overlay.onclick = () => {
+    overlay.style.display = "none";
+    music.play();
+
+    let i = 0;
+    images[i].style.display = "block";
+
+    setInterval(() => {
+        images[i].style.display = "none";
+        i = (i + 1) % images.length;
+        images[i].style.display = "block";
+    }, 4000);
+};
+</script>
+
+</body>
+</html>
