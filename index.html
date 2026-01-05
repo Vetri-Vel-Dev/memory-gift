@@ -43,6 +43,10 @@
             filter: brightness(1);
             transform: scale(1.02);
             transition: transform 7s ease, filter 4s ease;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            pointer-events: none;
         }
 
 
@@ -254,6 +258,28 @@
         #stage {
             z-index: 1;
         }
+
+        #startMessage {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 28px;
+            font-size: 20px;
+            letter-spacing: 1px;
+            color: #f3b6c8;
+            /* soft girly rose */
+            opacity: 1;
+            transition: opacity 1.5s ease;
+            pointer-events: none;
+            z-index: 9;
+        }
+
+        #startMessage.hide {
+            opacity: 0;
+        }
     </style>
 
 </head>
@@ -274,6 +300,7 @@
     <div id="textMoment"></div>
     <div id="vignette"></div>
     <div id="light"></div>
+    <div id="startMessage">Throwback memories ✦</div>
     <div id="hint">touch & hold</div>
 
     <audio id="music" loop>
@@ -281,7 +308,9 @@
     </audio>
 
     <script>
-
+        document.addEventListener("contextmenu", e => {
+            e.preventDefault();
+        });
         const photos = document.querySelectorAll('.photo');
         const textMoment = document.getElementById('textMoment');
         const light = document.getElementById('light');
@@ -311,6 +340,10 @@
         function reveal() {
             if (revealed) return;
             revealed = true;
+            const startMessage = document.getElementById("startMessage");
+            if (index === 0) {
+                startMessage.classList.add("hide");
+            }
 
             hideHint();
             music.play();
@@ -404,6 +437,7 @@
 
         let isTouch = false;
         document.addEventListener("touchstart", e => {
+            e.preventDefault();
             isTouch = true;
             const t = e.touches[0];
             startHold(t.clientX, t.clientY);
